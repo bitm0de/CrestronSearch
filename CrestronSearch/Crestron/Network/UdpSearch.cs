@@ -39,20 +39,35 @@ namespace CrestronSearch.Crestron.Network
                     var bytes = result.Buffer;
                     if (!result.RemoteEndPoint.Address.Equals(localIP))
                     {
-                        RawDataReceived?.Invoke(bytes, result.RemoteEndPoint);
+                        OnRawDataReceived(bytes, result.RemoteEndPoint);
                     }
                 }
 
             }
             catch (Exception ex)
             {
-                Error?.Invoke(ex);
+                OnError(ex);
             }
             finally
             {
                 listener?.Close();
-                Destroyed?.Invoke();
+                OnDestroyed();
             }
+        }
+
+        private static void OnRawDataReceived(byte[] receivedbytes, IPEndPoint ip)
+        {
+            RawDataReceived?.Invoke(receivedbytes, ip);
+        }
+
+        private static void OnError(Exception ex)
+        {
+            Error?.Invoke(ex);
+        }
+
+        private static void OnDestroyed()
+        {
+            Destroyed?.Invoke();
         }
     }
 }
